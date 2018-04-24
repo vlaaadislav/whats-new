@@ -11,7 +11,7 @@
 </script>
 
 <style lang="scss">
-    @import "~material-design-icons/iconfont/material-icons.css";
+    @import "../../static/css/photon.min.css";
 
     *,
     *::before,
@@ -21,5 +21,10 @@
 
     html {
         font-size: 100%;
+    }
+
+    #app {
+        height: 100vh;
+        width: 100%;
     }
 </style>
