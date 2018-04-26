@@ -1,13 +1,28 @@
 <template>
     <div id="app">
-        <router-view></router-view>
+        <app-header />
+        <main class="content">
+            <app-nav />
+            <router-view />
+        </main>
+        <app-footer/>
     </div>
 </template>
 
 <script>
+    import AppHeader from './components/AppHeader'
+    import AppFooter from './components/AppFooter'
+    import AppNav from './components/AppNav'
+
     export default {
-        name: 'whats-new'
-    };
+        name: 'whats-new',
+
+        components: {
+            AppFooter,
+            AppHeader,
+            AppNav
+        }
+    }
 </script>
 
 <style lang="scss">
@@ -26,5 +41,12 @@
     #app {
         height: 100vh;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content {
+        display: flex;
+        flex-grow: 1;
     }
 </style>
