@@ -2,7 +2,7 @@
     <header class="toolbar toolbar-header">
         <div class="toolbar-actions">
             <div class="btn-group">
-                <button @click="addNewGame" class="btn btn-default">
+                <button @click="$modal.show('add-directory')" class="btn btn-default">
                     <i class="icon icon-list-add"></i>
                 </button>
                 <button class="btn btn-default">
@@ -26,15 +26,26 @@
             </button>
         </div>
 
-        <div class="modal" ref="modal">
-            <form>
-                <header class="toolbar toolbar-header" @mousedown="dragModal">
+        <modal
+                name="add-directory"
+                adaptive
+                draggable
+                :width="300"
+                height="auto"
+                @before-close="modalClose">
+            <form ref="modalForm" @submit.prevent="addNewDirectory">
+                <header class="toolbar toolbar-header">
                     <h1 class="title">Add New Game</h1>
                 </header>
 
-                <main class="modal__content">
+                <main class="modal-content">
                     <div class="form-group">
-                        <input type="email" class="form-control" placeholder="Name">
+                        <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Name"
+                                required
+                                name="gameName">
                     </div>
 
                     <div class="form-group">
@@ -50,17 +61,17 @@
 
                 <footer class="toolbar toolbar-footer">
                     <div class="toolbar-actions">
-                        <button class="btn btn-default">
+                        <button class="btn btn-default" @click="$modal.hide('add-directory')">
                             Cancel
                         </button>
 
-                        <button class="btn btn-primary pull-right">
+                        <button class="btn btn-primary pull-right" type="submit">
                             Save
                         </button>
                     </div>
                 </footer>
             </form>
-        </div>
+        </modal>
     </header>
 </template>
 
@@ -73,59 +84,37 @@
 
         data() {
             return {
-                directoryPath: ''
+                directoryPath: '',
+                isModalVisible: false
             }
         },
 
         methods: {
-            addNewGame() {
-
-            },
             selectDirectory() {
-                remote.dialog.showOpenDialog({ properties: ['openDirectory'] }, this.addNewDirectory)
+                remote.dialog.showOpenDialog({
+                    properties: ['openDirectory']
+                }, path => this.directoryPath = path[0])
             },
-            addNewDirectory(path) {
-                this.directoryPath = path
+            addNewDirectory(event) {
+                const name = event.target.elements['gameName'].value
+
+                this.$store.dispatch('insert', { name, path: this.directoryPath })
+
+                this.modalClose()
             },
-            dragModal(event) {
-                const modal = this.$refs.modal;
-
-                const initX = modal.offsetLeft,
-                    initY = modal.offsetTop,
-                    mousePressX = event.clientX,
-                    mousePressY = event.clientY
-
-                modal.addEventListener('mousemove', repositionElement)
-
-                window.addEventListener('mouseup', () => {
-                    modal.removeEventListener('mousemove', repositionElement)
-                })
-
-                function repositionElement(event) {
-                    this.style.left = initX + event.clientX - mousePressX + 'px';
-                    this.style.top = initY + event.clientY - mousePressY + 'px';
-                }
+            modalClose() {
+                this.directoryPath = ''
+                this.$refs.modalForm.reset()
             }
         }
     }
 </script>
 
 <style lang="scss">
-    .modal {
-        position: fixed;
-        z-index: 1;
-        left: 33vw;
-        top: 33vh;
-        width: 33vw;
-        border: 1px solid #bebebe;
-        box-shadow: 0 0 30px rgba(0,0,0,.1);
-        border-radius: 6px;
-        overflow: hidden;
-        resize: horizontal;
-        background-color: white;
-
-        &__content {
-            padding: 10px;
+    .modal-content {
+        padding: 10px;
+        .form-group:last-child {
+            margin-bottom: 0;
         }
     }
 
