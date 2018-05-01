@@ -43,6 +43,10 @@
         width: 100%;
         display: flex;
         flex-direction: column;
+
+        .toolbar {
+            min-height: 30px;
+        }
     }
 
     .content {

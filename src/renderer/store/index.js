@@ -35,7 +35,8 @@ const store = new Vuex.Store({
         db: (state) => state.db,
         ext: (state) => state.extensions,
         all: async (state) => await state.db.find({ }),
-        games: (state) => state.games
+        games: (state) => state.games,
+        gameData: (state) => async (gameName) => await state.db.findOne({ name: gameName })
     },
 
     actions: {
