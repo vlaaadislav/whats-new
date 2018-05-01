@@ -6,7 +6,7 @@
 
 <script>
     export default {
-        name: 'landing-page'
+        name: 'main-page'
     }
 </script>
 

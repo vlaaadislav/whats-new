@@ -5,25 +5,15 @@
                 <button @click="$modal.show('add-directory')" class="btn btn-default">
                     <i class="icon icon-list-add"></i>
                 </button>
-                <button class="btn btn-default">
-                    <span class="icon icon-cloud"></span>
+
+                <button @click="dropTable" class="btn btn-default">
+                    <i class="icon icon-trash"></i>
                 </button>
-                <button class="btn btn-default">
-                    <span class="icon icon-popup"></span>
-                </button>
-                <button class="btn btn-default">
-                    <span class="icon icon-shuffle"></span>
+
+                <button @click="consoleAllData" class="btn btn-default">
+                    <i class="icon icon-publish"></i>
                 </button>
             </div>
-
-            <button class="btn btn-default">
-                <span class="icon icon-home icon-text"></span>
-                Filters
-            </button>
-
-            <button class="btn btn-default btn-dropdown pull-right">
-                <span class="icon icon-megaphone"></span>
-            </button>
         </div>
 
         <modal
@@ -97,14 +87,18 @@
             },
             addNewDirectory(event) {
                 const name = event.target.elements['gameName'].value
-
                 this.$store.dispatch('insert', { name, path: this.directoryPath })
-
-                this.modalClose()
+                this.$modal.hide('add-directory')
             },
             modalClose() {
                 this.directoryPath = ''
                 this.$refs.modalForm.reset()
+            },
+            dropTable() {
+                this.$store.dispatch('drop')
+            },
+            async consoleAllData() {
+                console.log(await this.$store.getters.all)
             }
         }
     }

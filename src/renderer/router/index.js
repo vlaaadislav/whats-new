@@ -4,15 +4,13 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
+    linkActiveClass: 'active',
+    scrollBehavior: () => ({ y: 0 }),
     routes: [
         {
-            path: '/',
-            name: 'landing-page',
-            component: require('@/components/Home').default
-        },
-        {
             path: '*',
-            redirect: '/'
+            name: 'main-page',
+            component: require('@/components/MainPage').default
         }
     ]
 })
