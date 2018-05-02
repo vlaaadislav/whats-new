@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import db from '../datastore'
 import fs from 'fs'
 import path from 'path'
+import difference from 'lodash.difference'
 
 Vue.use(Vuex)
 
@@ -29,7 +30,8 @@ const store = new Vuex.Store({
             '.img',
             '.webp'
         ],
-        games: []
+        games: [],
+        gameData: {}
     },
 
     getters: {
@@ -37,7 +39,7 @@ const store = new Vuex.Store({
         ext: (state) => state.extensions,
         all: async (state) => await state.db.find({ }),
         games: (state) => state.games,
-        gameData: (state) => async (gameName) => await state.db.findOne({ name: gameName })
+        gameData: (state) => state.gameData
     },
 
     actions: {
@@ -68,16 +70,44 @@ const store = new Vuex.Store({
             await dispatch('updateGames')
         },
 
-        async update({ getters }, { name, path }) {
+        async update({ getters, dispatch }, { name, path }) {
             const files = await getFilesInDir(path, getters.ext)
-            const newFiles = (await getters.db.find({ name }, { files: 1 })).map(item => item.files)
-            console.log(newFiles)
+            const oldFiles = (await getters.db.find({ name }, { files: 1 }))[0].files
 
-            // await getters.db.update({ name }, {  })
+            const newFiles = difference(files, oldFiles)
+
+            await getters.db.update({ name }, { $set: { newFiles } }, { })
+            dispatch('fetchGameData', name)
         },
 
-        async updateGames({ getters, state }) {
-            state.games = (await getters.db.find({ }, { name: 1 })).map(item => item.name)
+        async updateGames({ getters, commit }) {
+            commit('setGames', (await getters.db.find({ }, { name: 1 })).map(item => item.name))
+        },
+
+        async fetchGameData({ getters, commit }, name) {
+            commit('setGameData', (await getters.db.findOne({ name })))
+        },
+
+        async updateGameFiles({ getters, dispatch }, name) {
+            if (!name) {
+                return
+            }
+            await getters.db.update({ name }, {
+                $set: {
+                    files: getters.gameData.newFiles.concat(getters.gameData.files),
+                    newFiles: []
+                }
+            }, { })
+            dispatch('fetchGameData', name)
+        }
+    },
+
+    mutations: {
+        setGameData(state, gameData) {
+            state.gameData = gameData || {}
+        },
+        setGames(state, games) {
+            state.games = games
         }
     }
 })

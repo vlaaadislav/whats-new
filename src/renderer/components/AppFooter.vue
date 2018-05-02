@@ -5,7 +5,7 @@
                 Cancel
             </button>
 
-            <button class="btn btn-primary pull-right">
+            <button class="btn btn-primary pull-right" @click="updateGameFiles">
                 Update Game Files
             </button>
         </div>
@@ -14,7 +14,13 @@
 
 <script>
     export default {
-        name: 'AppFooter'
+        name: 'AppFooter',
+
+        methods: {
+            updateGameFiles() {
+                this.$store.dispatch('updateGameFiles', this.$route.path.substr(1))
+            }
+        }
     }
 </script>
 

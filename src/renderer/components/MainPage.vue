@@ -2,7 +2,10 @@
     <div class="main-page">
         <tabs>
             <tab name="Old Images">
-                <gallery :images="images" :index="imageIndex" @close="index = null"/>
+                <gallery id="old"
+                         :images="images"
+                         :index="imageIndex"
+                         @close="imageIndex = null"/>
 
                 <div class="images">
                     <div
@@ -16,11 +19,24 @@
             </tab>
 
             <tab name="New Images">
-                new images
+                <gallery id="new"
+                         :images="newImages"
+                         :index="newImageIndex"
+                         @close="newImageIndex = null"/>
+
+                <div class="images">
+                    <div
+                            v-for="(image, index) in newImages"
+                            :key="index"
+                            class="image-wrapper"
+                            @click="newImageIndex = index">
+                        <img v-lazy="image"/>
+                    </div>
+                </div>
             </tab>
 
             <tab name="All Images">
-                All
+                all images
             </tab>
         </tabs>
     </div>
@@ -29,6 +45,7 @@
 <script>
     import VueGallery from 'vue-gallery/dist/js/vue-gallery'
     import { Tabs, Tab } from 'vue-tabs-component';
+    import { mapGetters } from 'vuex'
 
     export default {
         name: 'main-page',
@@ -41,17 +58,21 @@
 
         data() {
             return {
-                gameData: null,
-                imageIndex: null
+                imageIndex: null,
+                newImageIndex: null
             }
         },
 
         computed: {
+            ...mapGetters([
+                'gameData'
+            ]),
+
             images() {
-                if (this.gameData === null) {
-                    return [];
-                }
                 return this.gameData.files
+            },
+            newImages() {
+                return this.gameData.newFiles
             }
         },
 
@@ -60,9 +81,8 @@
         },
 
         methods: {
-            async fetchGameData() {
-                this.gameData = {}
-                this.gameData = await this.$store.getters.gameData(this.$route.path.substr(1))
+            fetchGameData() {
+                this.$store.dispatch('fetchGameData', this.$route.path.substr(1))
             }
         }
     }
