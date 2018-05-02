@@ -1,6 +1,6 @@
 {
     "name": "whats-new",
-    "version": "0.5",
+    "version": "0.5.1",
     "author": "Vlad <vlaaadislav@gmail.com>",
     "description": "An electron-app that shows what's new.",
     "license": null,

@@ -55,7 +55,7 @@
                                 :class="{ new: newImages.length > index }"
                                 @dblclick="allImageIndex = index">
                             <td>{{ getFilename(file) }}</td>
-                            <td>{{ file }}</td>
+                            <td class="path-column">{{ file }}</td>
                             <td>{{ getFilename(file).split('.')[1] }}</td>
                         </tr>
                     </tbody>

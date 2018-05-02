@@ -73,7 +73,7 @@
 
         data() {
             return {
-                directoryPath: '',
+                directoryPath: [],
                 isModalVisible: false
             }
         },
@@ -81,16 +81,17 @@
         methods: {
             selectDirectory() {
                 remote.dialog.showOpenDialog({
-                    properties: ['openDirectory']
-                }, path => this.directoryPath = path[0])
+                    properties: ['openFile', 'openDirectory', 'multiSelections']
+                }, path => this.directoryPath = path)
             },
             addNewDirectory(event) {
                 const name = event.target.elements['gameName'].value
+                console.log(this.directoryPath)
                 this.$store.dispatch('insert', { name, path: this.directoryPath })
                 this.$modal.hide('add-directory')
             },
             modalClose() {
-                this.directoryPath = ''
+                this.directoryPath = []
                 this.$refs.modalForm.reset()
             },
             dropTable() {

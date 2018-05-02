@@ -28,7 +28,8 @@ const store = new Vuex.Store({
             '.jpeg',
             '.gif',
             '.img',
-            '.webp'
+            '.webp',
+            '.webm'
         ],
         games: [],
         gameData: {}
@@ -44,7 +45,11 @@ const store = new Vuex.Store({
 
     actions: {
         async insert({ getters, dispatch }, { name, path }) {
-            const files = await getFilesInDir(path, getters.ext)
+            let files = []
+
+            for (let p of path) {
+                files = files.concat(await getFilesInDir(p, getters.ext))
+            }
 
             if (await getters.db.findOne({ name })) {
                 throw new Error('Game already exists')
