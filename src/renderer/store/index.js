@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import db from '../datastore'
 import fs from 'fs'
 import path from 'path'
-import difference from 'lodash.difference'
+import differenceWith from 'lodash.differencewith'
 
 Vue.use(Vuex)
 
@@ -11,7 +11,12 @@ function getFilesInDir(dirpath, ext) {
     return fs.readdirSync(dirpath).reduce((acc, file) => {
         file = path.join(dirpath, file)
         if (ext.includes(path.extname(file))) {
-            return acc.concat(file)
+            return acc.push({
+                path: file,
+                name: path.basename(file),
+                date: new Date(),
+                size:  (fs.statSync(file).size / (1024*1024)).toFixed(2)
+            }), acc
         }
         return fs.statSync(file).isDirectory() ? acc.concat(getFilesInDir(file, ext)) : acc
     }, [])
@@ -28,8 +33,7 @@ const store = new Vuex.Store({
             '.jpeg',
             '.gif',
             '.img',
-            '.webp',
-            '.webm'
+            '.webp'
         ],
         games: [],
         gameData: {}
@@ -40,7 +44,19 @@ const store = new Vuex.Store({
         ext: (state) => state.extensions,
         all: async (state) => await state.db.find({ }),
         games: (state) => state.games,
-        gameData: (state) => state.gameData
+        gameData: (state) => state.gameData,
+        images: (state, getters) => {
+            if (!getters.gameData.files || getters.gameData.files.length === 0) {
+                return []
+            }
+            return getters.gameData.files.map(image => image.path)
+        },
+        newImages: (state, getters) => {
+            if (!getters.gameData.newFiles || getters.gameData.newFiles.length === 0) {
+                return []
+            }
+            return getters.gameData.newFiles.map(image => image.path)
+        },
     },
 
     actions: {
@@ -79,7 +95,9 @@ const store = new Vuex.Store({
             const files = await getFilesInDir(path, getters.ext)
             const oldFiles = (await getters.db.find({ name }, { files: 1 }))[0].files
 
-            const newFiles = difference(files, oldFiles)
+            const newFiles = differenceWith(files, oldFiles, (oldImg, newImg) => {
+                return oldImg.name === newImg.name && oldImg.size === newImg.size
+            })
 
             await getters.db.update({ name }, { $set: { newFiles } }, { })
             dispatch('fetchGameData', name)

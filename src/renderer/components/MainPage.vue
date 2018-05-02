@@ -90,17 +90,12 @@
 
         computed: {
             ...mapGetters([
-                'gameData'
+                'gameData',
+                'images',
+                'newImages'
             ]),
-
-            images() {
-                return this.gameData.files
-            },
-            newImages() {
-                return this.gameData.newFiles
-            },
             allImages() {
-                if (!this.images || !this.newImages) {
+                if (this.images.length === this.newImages.length === 0) {
                     return []
                 }
                 return this.newImages.concat(this.images)
