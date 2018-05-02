@@ -26,7 +26,8 @@ const store = new Vuex.Store({
             '.jpg',
             '.jpeg',
             '.gif',
-            '.img'
+            '.img',
+            '.webp'
         ],
         games: []
     },
@@ -60,6 +61,19 @@ const store = new Vuex.Store({
         async drop({ getters, dispatch }) {
             await getters.db.remove({ }, { multi: true })
             await dispatch('updateGames')
+        },
+
+        async remove({ getters, dispatch }, { name }) {
+            await getters.db.remove({ name }, { })
+            await dispatch('updateGames')
+        },
+
+        async update({ getters }, { name, path }) {
+            const files = await getFilesInDir(path, getters.ext)
+            const newFiles = (await getters.db.find({ name }, { files: 1 })).map(item => item.files)
+            console.log(newFiles)
+
+            // await getters.db.update({ name }, {  })
         },
 
         async updateGames({ getters, state }) {

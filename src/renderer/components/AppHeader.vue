@@ -66,7 +66,6 @@
 </template>
 
 <script>
-    import fs from 'fs'
     import { remote } from 'electron'
 
     export default {
@@ -105,6 +104,10 @@
 </script>
 
 <style lang="scss">
+    header {
+        height: 30px;
+    }
+
     .modal-content {
         padding: 10px;
         .form-group:last-child {

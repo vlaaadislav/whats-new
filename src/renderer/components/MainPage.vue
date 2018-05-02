@@ -1,38 +1,56 @@
 <template>
     <div class="main-page">
-        <gallery :images="images" :index="imageIndex" @close="index = null"/>
+        <tabs>
+            <tab name="Old Images">
+                <gallery :images="images" :index="imageIndex" @close="index = null"/>
 
-        <div class="images">
-            <div
-                    v-for="(image, index) in images"
-                    :key="index"
-                    class="image-wrapper"
-                    @click="imageIndex = index">
-                <img v-lazy="image"/>
-            </div>
-        </div>
+                <div class="images">
+                    <div
+                            v-for="(image, index) in images"
+                            :key="index"
+                            class="image-wrapper"
+                            @click="imageIndex = index">
+                        <img v-lazy="image"/>
+                    </div>
+                </div>
+            </tab>
+
+            <tab name="New Images">
+                new images
+            </tab>
+
+            <tab name="All Images">
+                All
+            </tab>
+        </tabs>
     </div>
 </template>
 
 <script>
     import VueGallery from 'vue-gallery/dist/js/vue-gallery'
+    import { Tabs, Tab } from 'vue-tabs-component';
 
     export default {
         name: 'main-page',
 
         components: {
             'gallery': VueGallery,
+            Tabs,
+            Tab
         },
 
         data() {
             return {
-                gameData: {},
+                gameData: null,
                 imageIndex: null
             }
         },
 
         computed: {
             images() {
+                if (this.gameData === null) {
+                    return [];
+                }
                 return this.gameData.files
             }
         },
@@ -52,7 +70,10 @@
 
 <style lang="scss">
     .main-page {
-        overflow-y: auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
 
         .images {
             display: flex;
