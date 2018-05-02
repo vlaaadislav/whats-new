@@ -36,7 +36,30 @@
             </tab>
 
             <tab name="All Images">
-                all images
+                <gallery id="all"
+                         :images="allImages"
+                         :index="allImageIndex"
+                         @close="allImageIndex = null"/>
+
+                <table class="table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Path</th>
+                            <th>Format</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                                v-for="(file, index) in allImages"
+                                :class="{ new: newImages.length > index }"
+                                @dblclick="allImageIndex = index">
+                            <td>{{ getFilename(file) }}</td>
+                            <td>{{ file }}</td>
+                            <td>{{ getFilename(file).split('.')[1] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </tab>
         </tabs>
     </div>
@@ -44,8 +67,9 @@
 
 <script>
     import VueGallery from 'vue-gallery/dist/js/vue-gallery'
-    import { Tabs, Tab } from 'vue-tabs-component';
+    import { Tabs, Tab } from 'vue-tabs-component'
     import { mapGetters } from 'vuex'
+    import path from 'path'
 
     export default {
         name: 'main-page',
@@ -59,7 +83,8 @@
         data() {
             return {
                 imageIndex: null,
-                newImageIndex: null
+                newImageIndex: null,
+                allImageIndex: null
             }
         },
 
@@ -73,6 +98,12 @@
             },
             newImages() {
                 return this.gameData.newFiles
+            },
+            allImages() {
+                if (!this.images || !this.newImages) {
+                    return []
+                }
+                return this.newImages.concat(this.images)
             }
         },
 
@@ -83,6 +114,9 @@
         methods: {
             fetchGameData() {
                 this.$store.dispatch('fetchGameData', this.$route.path.substr(1))
+            },
+            getFilename(filepath) {
+                return path.basename(filepath)
             }
         }
     }
@@ -123,6 +157,18 @@
             image-rendering: crisp-edges;
             height: 100%;
             width: 100%;
+        }
+
+        table {
+            margin-top: -10px;
+        }
+
+        tr:nth-child(even).new {
+            background-color: rgba(52, 200, 74, 0.5)
+        }
+
+        tr:nth-child(odd).new {
+            background-color: rgba(52, 200, 74, 0.2)
         }
     }
 </style>
