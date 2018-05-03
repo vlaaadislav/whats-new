@@ -4,6 +4,7 @@ import db from '../datastore'
 import fs from 'fs'
 import path from 'path'
 import differenceWith from 'lodash.differencewith'
+import pullAllWidth from 'lodash.pullallwith'
 
 Vue.use(Vuex)
 
@@ -92,14 +93,20 @@ const store = new Vuex.Store({
         },
 
         async update({ getters, dispatch }, { name, path }) {
-            const files = await getFilesInDir(path, getters.ext)
+            const newFiles = await getFilesInDir(path, getters.ext)
             const oldFiles = (await getters.db.find({ name }, { files: 1 }))[0].files
 
-            const newFiles = differenceWith(files, oldFiles, (oldImg, newImg) => {
-                return oldImg.name === newImg.name && oldImg.size === newImg.size
+            const uniqFiles = differenceWith(newFiles, oldFiles, (newImg, oldImg) => {
+                if (newImg.name === oldImg.name && newImg.size === oldImg.size) {
+                    oldImg.path = newImg.path
+                    return true
+                }
+                return false
             })
 
-            await getters.db.update({ name }, { $set: { newFiles } }, { })
+            console.log(oldFiles)
+
+            await getters.db.update({ name }, { $set: { newFiles: uniqFiles, files: oldFiles }}, {})
             dispatch('fetchGameData', name)
         },
 

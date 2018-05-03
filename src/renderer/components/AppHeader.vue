@@ -86,7 +86,6 @@
             },
             addNewDirectory(event) {
                 const name = event.target.elements['gameName'].value
-                console.log(this.directoryPath)
                 this.$store.dispatch('insert', { name, path: this.directoryPath })
                 this.$modal.hide('add-directory')
             },

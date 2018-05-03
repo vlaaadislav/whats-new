@@ -52,6 +52,8 @@
     },
     "dependencies": {
         "lodash.differencewith": "^4.5.0",
+        "lodash.intersectionwith": "^4.4.0",
+        "lodash.pullallwith": "^4.7.0",
         "nedb-promise": "^2.0.1",
         "underscore": "^1.9.0",
         "vue": "^2.3.3",
