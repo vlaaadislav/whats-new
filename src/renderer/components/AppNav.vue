@@ -23,7 +23,7 @@
             updateDirectory(name) {
                 remote.dialog.showOpenDialog({
                     properties: ['openDirectory', 'multiSelections']
-                }, path => this.$store.dispatch('update', { name, path: path[0] }))
+                }, path => this.$store.dispatch('update', { name, path: path }))
             },
             removeGame(name) {
                 this.$store.dispatch('remove', { name })

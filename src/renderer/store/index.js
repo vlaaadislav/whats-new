@@ -4,20 +4,26 @@ import db from '../datastore'
 import fs from 'fs'
 import path from 'path'
 import differenceWith from 'lodash.differencewith'
-import pullAllWidth from 'lodash.pullallwith'
 
 Vue.use(Vuex)
 
 function getFilesInDir(dirpath, ext) {
+    if (Array.isArray(dirpath)) {
+        return dirpath.reduce((acc, path) => {
+            return acc.concat(getFilesInDir(path, ext))
+        }, [])
+    }
+
     return fs.readdirSync(dirpath).reduce((acc, file) => {
         file = path.join(dirpath, file)
         if (ext.includes(path.extname(file))) {
-            return acc.push({
+            acc.push({
                 path: file,
                 name: path.basename(file),
                 date: new Date(),
                 size:  (fs.statSync(file).size / (1024*1024)).toFixed(2)
-            }), acc
+            })
+            return acc
         }
         return fs.statSync(file).isDirectory() ? acc.concat(getFilesInDir(file, ext)) : acc
     }, [])
@@ -62,11 +68,7 @@ const store = new Vuex.Store({
 
     actions: {
         async insert({ getters, dispatch }, { name, path }) {
-            let files = []
-
-            for (let p of path) {
-                files = files.concat(await getFilesInDir(p, getters.ext))
-            }
+            const files = await getFilesInDir(path, getters.ext)
 
             if (await getters.db.findOne({ name })) {
                 throw new Error('Game already exists')
@@ -74,7 +76,6 @@ const store = new Vuex.Store({
 
             await getters.db.insert({
                 name,
-                path,
                 files,
                 newFiles: []
             })
@@ -103,8 +104,6 @@ const store = new Vuex.Store({
                 }
                 return false
             })
-
-            console.log(oldFiles)
 
             await getters.db.update({ name }, { $set: { newFiles: uniqFiles, files: oldFiles }}, {})
             dispatch('fetchGameData', name)
