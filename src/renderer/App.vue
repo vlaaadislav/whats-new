@@ -26,7 +26,7 @@
 </script>
 
 <style lang="scss">
-    @import "../../static/css/photon.min.css";
+    @import '~photonkit/dist/css/photon.css';
 
     *,
     *::before,
