@@ -2,9 +2,9 @@
     <nav class="nav-group pane pane-sm sidebar">
         <h5 class="nav-group-title">Games</h5>
         <router-link
-            v-for="game in $store.getters.games"
+            v-for="game in games"
             :key="game"
-            :to="game"
+            :to="'/' + game"
             class="nav-group-item link"
         >
             <span class="text">{{ game }}</span>
@@ -19,6 +19,12 @@
 
     export default {
         name: 'AppNav',
+
+        computed: {
+            games() {
+                return this.$store.getters.games
+            }
+        },
 
         methods: {
             updateDirectory(name) {

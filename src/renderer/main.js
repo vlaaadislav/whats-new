@@ -11,7 +11,9 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 
 Vue.use(VModal)
-Vue.use(VueLazyload)
+Vue.use(VueLazyload, {
+    loading: '../static/loading_icon.gif'
+})
 
 /* eslint-disable no-new */
 new Vue({
