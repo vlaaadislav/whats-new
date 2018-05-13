@@ -17,12 +17,13 @@
         </div>
 
         <modal
-                name="add-directory"
-                adaptive
-                draggable
-                :width="300"
-                height="auto"
-                @before-close="modalClose">
+            name="add-directory"
+            adaptive
+            draggable
+            :width="300"
+            height="auto"
+            @before-close="modalClose"
+        >
             <form ref="modalForm" @submit.prevent="addNewDirectory">
                 <header class="toolbar toolbar-header">
                     <h1 class="title">Add New Game</h1>
@@ -31,19 +32,21 @@
                 <main class="modal-content">
                     <div class="form-group">
                         <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Name"
-                                required
-                                name="gameName">
+                            type="text"
+                            class="form-control"
+                            placeholder="Name"
+                            required
+                            name="gameName"
+                        >
                     </div>
 
                     <div class="form-group">
                         <div ref="directoryInput" class="form-control directory" tabindex="0">
                             <input
-                                    @focus="$refs.directoryInput.focus()"
-                                    :placeholder="directoryPath || 'Directory'"
-                                    type="text">
+                                @focus="$refs.directoryInput.focus()"
+                                :placeholder="directoryPath || 'Directory'"
+                                type="text"
+                            >
                             <i @click="selectDirectory" class="icon icon-folder"></i>
                         </div>
                     </div>

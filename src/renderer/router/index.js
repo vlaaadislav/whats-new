@@ -5,7 +5,7 @@ Vue.use(Router)
 
 export default new Router({
     linkActiveClass: 'active',
-    scrollBehavior: () => ({ y: 0 }),
+    scrollBehavior: () => ({ x: 0, y: 0 }),
     routes: [
         {
             path: '*',

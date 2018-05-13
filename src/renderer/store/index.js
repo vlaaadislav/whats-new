@@ -21,7 +21,7 @@ function getFilesInDir(dirpath, ext) {
                 path: file,
                 name: path.basename(file),
                 date: new Date(),
-                size:  (fs.statSync(file).size / (1024*1024)).toFixed(2)
+                size: (fs.statSync(file).size / (1024 * 1024)).toFixed(2)
             })
             return acc
         }
@@ -49,7 +49,7 @@ const store = new Vuex.Store({
     getters: {
         db: (state) => state.db,
         ext: (state) => state.extensions,
-        all: async (state) => await state.db.find({ }),
+        all: async (state) => await state.db.find({}),
         games: (state) => state.games,
         gameData: (state) => state.gameData,
         images: (state, getters) => {
@@ -84,12 +84,12 @@ const store = new Vuex.Store({
         },
 
         async drop({ getters, dispatch }) {
-            await getters.db.remove({ }, { multi: true })
+            await getters.db.remove({}, { multi: true })
             await dispatch('updateGames')
         },
 
         async remove({ getters, dispatch }, { name }) {
-            await getters.db.remove({ name }, { })
+            await getters.db.remove({ name }, {})
             await dispatch('updateGames')
         },
 
@@ -105,12 +105,12 @@ const store = new Vuex.Store({
                 return false
             })
 
-            await getters.db.update({ name }, { $set: { newFiles: uniqFiles, files: oldFiles }}, {})
+            await getters.db.update({ name }, { $set: { newFiles: uniqFiles, files: oldFiles } }, {})
             dispatch('fetchGameData', name)
         },
 
         async updateGames({ getters, commit }) {
-            commit('setGames', (await getters.db.find({ }, { name: 1 })).map(item => item.name))
+            commit('setGames', (await getters.db.find({}, { name: 1 })).map(item => item.name))
         },
 
         async fetchGameData({ getters, commit }, name) {
@@ -126,7 +126,7 @@ const store = new Vuex.Store({
                     files: getters.gameData.newFiles.concat(getters.gameData.files),
                     newFiles: []
                 }
-            }, { })
+            }, {})
             dispatch('fetchGameData', name)
         }
     },

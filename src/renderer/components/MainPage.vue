@@ -1,65 +1,52 @@
 <template>
     <div class="main-page">
-        <tabs>
+        <tabs @changed="changeTab" :cache-lifetime="0">
             <tab name="Old Images">
-                <gallery id="old"
-                         :images="images"
-                         :index="imageIndex"
-                         @close="imageIndex = null"/>
+                <gallery
+                    id="old"
+                    :images="images"
+                    :index="imageIndex"
+                    @close="imageIndex = null"
+                />
 
-                <div class="images">
+                <div
+                    class="images"
+                    v-infinite-scroll="loadMoreImages"
+                    infinite-scroll-disabled="payload.loading"
+                >
                     <div
-                            v-for="(image, index) in images"
-                            :key="index"
-                            class="image-wrapper"
-                            @click="imageIndex = index">
-                        <img v-lazy="image"/>
+                        v-for="(image, index) in images.slice(0, payload.imagesQty - 1)"
+                        :key="index"
+                        class="image-wrapper"
+                        @click="imageIndex = index"
+                    >
+                        <img :src="image"/>
                     </div>
                 </div>
             </tab>
 
             <tab name="New Images">
-                <gallery id="new"
-                         :images="newImages"
-                         :index="newImageIndex"
-                         @close="newImageIndex = null"/>
+                <gallery
+                    id="new"
+                    :images="newImages"
+                    :index="newImageIndex"
+                    @close="newImageIndex = null"
+                />
 
-                <div class="images">
+                <div
+                    class="images"
+                    v-infinite-scroll="loadMoreNewImages"
+                    infinite-scroll-disabled="payload.loading"
+                >
                     <div
-                            v-for="(image, index) in newImages"
-                            :key="index"
-                            class="image-wrapper"
-                            @click="newImageIndex = index">
+                        v-for="(image, index) in newImages.slice(0, payload.newImagesQty - 1)"
+                        :key="index"
+                        class="image-wrapper"
+                        @click="newImageIndex = index"
+                    >
                         <img v-lazy="image"/>
                     </div>
                 </div>
-            </tab>
-
-            <tab name="All Images">
-                <gallery id="all"
-                         :images="allImages"
-                         :index="allImageIndex"
-                         @close="allImageIndex = null"/>
-
-                <table class="table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Path</th>
-                            <th>Format</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                                v-for="(file, index) in allImages"
-                                :class="{ new: newImages.length > index }"
-                                @dblclick="allImageIndex = index">
-                            <td>{{ getFilename(file) }}</td>
-                            <td class="path-column">{{ file }}</td>
-                            <td>{{ getFilename(file).split('.')[1] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
             </tab>
         </tabs>
     </div>
@@ -70,6 +57,7 @@
     import { Tabs, Tab } from 'vue-tabs-component'
     import { mapGetters } from 'vuex'
     import path from 'path'
+    import infiniteScroll from 'vue-infinite-scroll'
 
     export default {
         name: 'main-page',
@@ -80,11 +68,21 @@
             Tab
         },
 
+        directives: {
+            infiniteScroll
+        },
+
         data() {
             return {
                 imageIndex: null,
                 newImageIndex: null,
-                allImageIndex: null
+                allImageIndex: null,
+                payload: {
+                    loading: false,
+                    imagesQty: 10,
+                    newImagesQty: 10,
+                    addImagesQty: 10
+                }
             }
         },
 
@@ -112,6 +110,21 @@
             },
             getFilename(filepath) {
                 return path.basename(filepath)
+            },
+            loadMoreImages(field = 'imagesQty') {
+                this.$set(this.payload, 'loading', true)
+                this.$set(
+                    this.payload,
+                    field,
+                    this.payload[field] + this.payload.addImagesQty
+                )
+                this.$set(this.payload, 'loading', false)
+            },
+            loadMoreNewImages() {
+                this.loadMoreImages('newImagesQty')
+            },
+            changeTab(arg) {
+                console.log(arg)
             }
         }
     }
@@ -134,16 +147,16 @@
             height: 200px;
             width: 250px;
             margin: 5px;
-            box-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
             border-radius: 2px;
             overflow: hidden;
             transition: ease-out .5s;
-            transform: translate3d(0,0,0);
+            transform: translate3d(0, 0, 0);
             backface-visibility: hidden;
             will-change: transform;
 
             &:hover {
-                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+                box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 transform: scale(1.1);
             }
         }
