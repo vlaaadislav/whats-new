@@ -7,36 +7,35 @@
             @close="imageIndex = null"
         />
 
-        <div
-            class="images"
-            v-infinite-scroll="loadMoreImages"
-            infinite-scroll-disabled="payload.loading"
+        <recycle-list
+            class="scroller"
+            :items="imagesRows"
+            :item-height="imageHeight"
         >
-            <div
-                v-for="(image, index) in images.slice(0, imagesQty - 1)"
-                :key="index"
-                class="image-wrapper"
-                @click="imageIndex = index"
-            >
-                <img v-lazy="image"/>
+            <div slot-scope="{ item }" class="images">
+                <div
+                    v-for="image in item"
+                    :key="image.id"
+                    class="image-wrapper"
+                    @click="imageIndex = image.id"
+                >
+                    <img v-lazy="image.path"/>
+                </div>
             </div>
-        </div>
+        </recycle-list>
     </section>
 </template>
 
 <script>
     import VueGallery from 'vue-gallery/dist/js/vue-gallery.min'
-    import infiniteScroll from 'vue-infinite-scroll'
+    import { RecycleList } from 'vue-virtual-scroller'
 
     export default {
         name: 'ImagesView',
 
         components: {
-            gallery: VueGallery
-        },
-
-        directives: {
-            infiniteScroll
+            gallery: VueGallery,
+            RecycleList
         },
 
         props: {
@@ -49,23 +48,66 @@
         data() {
             return {
                 imageIndex: null,
-                imagesQty: 20,
-                loading: false,
-                perLoad: 20
+                containerWidth: null,
+                imageWidth: 260,
+                imageHeight: 210
             }
         },
 
+        computed: {
+            imagesItems() {
+                return this.images.map((item, index) => ({ path: item, id: index }))
+            },
+
+            imagesRows() {
+                let imagesPerRow = this.containerWidth / this.imageWidth
+                imagesPerRow = imagesPerRow >= 1 ? Math.floor(imagesPerRow) : 1
+                const getLastItem = (array) => array[array.length - 1]
+
+                return this.imagesItems.reduce((acc, item) => {
+                    let lastRow = getLastItem(acc)
+                    if (lastRow.length === imagesPerRow) {
+                        lastRow = []
+                        acc.push(lastRow)
+                    }
+                    lastRow.push(item)
+                    return acc
+                }, [ [] ])
+            }
+        },
+
+        mounted() {
+            window.addEventListener('resize', this.setContainerWidth)
+            this.setContainerWidth()
+        },
+
+        beforeDestroy() {
+            window.removeEventListener('resize', this.setContainerWidth)
+        },
+
         methods: {
-            loadMoreImages() {
-                this.loading = true
-                this.imagesQty += this.perLoad
-                this.loading = false
+            setContainerWidth() {
+                this.containerWidth = this.$el.clientWidth - 20
             }
         }
     }
 </script>
 
 <style lang="scss">
+    @import "~vue-virtual-scroller/dist/vue-virtual-scroller.css";
+
+    .wrapper {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .scroller {
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
+    }
+
     .images {
         display: flex;
         flex-wrap: wrap;

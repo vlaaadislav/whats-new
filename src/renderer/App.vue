@@ -101,10 +101,17 @@
     }
 
     .tabs-component-panels {
-        overflow-y: auto;
+        position: relative;
         display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        padding: 10px 0;
+        flex: 100% 1 1;
+    }
+
+    .tabs-component-panel {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
     }
 </style>
