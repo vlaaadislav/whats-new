@@ -12,7 +12,7 @@ Vue.config.productionTip = false
 
 Vue.use(VModal)
 Vue.use(VueLazyload, {
-    loading: '../static/loading_icon.gif'
+    loading: 'static/loading_icon.gif'
 })
 
 /* eslint-disable no-new */

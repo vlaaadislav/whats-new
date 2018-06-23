@@ -21,7 +21,7 @@ function getFilesInDir(dirpath, ext) {
                 path: file,
                 name: path.basename(file),
                 date: new Date(),
-                size: (fs.statSync(file).size / (1024 * 1024)).toFixed(2)
+                size: (fs.statSync(file).size / (1024 * 1024)).toFixed(3)
             })
             return acc
         }
